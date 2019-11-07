@@ -1,0 +1,88 @@
+
+<style>
+  .containerHome {
+    height: 400px;
+    background-color:#FAF0E6;
+    border-radius: 10px;
+  }
+
+
+ body {
+   padding: 10px;
+ }
+
+
+http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css
+body{margin-top:20px;}
+.fa-fw {width: 2em;}
+
+
+</style>
+
+
+<div class="containerHome">
+
+<div style="margin-left: -15px;" class="container">
+    <div class="row mt-4" style="display: inline;" >
+      <div style="border-radius:10px;align-items: center;background-color :#DCDCDC ;width : 111%;padding:10px;"> <h3 style="text-align: center;font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; font-size : 44px;">Sistema de Gestão - SOS - Cerveja</h3></div>
+        <div class="col-md-12 mt-4" style="margin-left:5.5%;border-radius:0 0 10px 10px;align-items: center;padding:10px;">
+            
+
+
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="/admin/novaVenda"><img src="https://image.flaticon.com/icons/svg/138/138263.svg" width="64px;" height="64px;" alt=""><br>Venda</a>
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="/admin/entradaEmNota"><img src="https://www.flaticon.com/premium-icon/icons/svg/2158/2158226.svg" width="64px;" height="64px;" alt=""><br>Entrada de Nota</a>
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="/admin/listarProdutos"><img src="https://image.flaticon.com/icons/svg/164/164995.svg" width="64px;" height="64px;" alt=""><br>Pesquisa de Produto</a>
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="#"><img src="https://www.flaticon.com/premium-icon/icons/svg/2104/2104119.svg" width="64px;" height="64px;" alt=""><br>Fornecedores</a>
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="#"><img src="https://image.flaticon.com/icons/svg/858/858699.svg" width="64px;" height="64px;" alt=""><br>Vendas</a>
+                <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="/admin/listagemDeClientes"><img src="https://image.flaticon.com/icons/svg/1605/1605350.svg" width="64px;" height="64px;" alt=""><br>Clientes</a>
+                 <a style="font-family: Century Gothic;font-size : 18px;margin-left:15px;border : none;" class="btn btn-outline-dark mt-2" href="#"><img src="https://image.flaticon.com/icons/svg/891/891391.svg" width="64px;" height="64px;" alt=""><br>Encerrar Sessão</a>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+<script>
+
+
+
+$("#BotaoExibeQuick").click((event)=>{
+
+event.preventDefault()
+
+if(document.getElementById("MenuSalaPrincipal").style.display == 'block'){
+  document.getElementById("MenuSalaPrincipal").style.display = 'none'
+}
+else
+{document.getElementById("MenuSalaPrincipal").style.display = 'block'}})
+
+
+
+
+
+
+
+
+$("#BotaoExibeReport").click((event)=>{
+event.preventDefault()
+
+if(document.getElementById("ReportSalaPrincipal").style.display == 'block' ){
+  document.getElementById("ReportSalaPrincipal").style.display = 'none'
+}
+else
+{document.getElementById("ReportSalaPrincipal").style.display = 'block'}})
+
+
+</script>
