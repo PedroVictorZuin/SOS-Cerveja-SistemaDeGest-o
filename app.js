@@ -16,12 +16,13 @@ const flash = require('connect-flash')
 // End Modules Loading 
 
 
+
 // Configs
 
 
 
 
-            // Body Parser 
+            // Body Parser
                 app.use(bodyParser.urlencoded({extended: true}))
                 app.use(bodyParser.json())
             // End Body Parser

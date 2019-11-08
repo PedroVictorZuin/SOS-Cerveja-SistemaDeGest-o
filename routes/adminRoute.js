@@ -10,6 +10,8 @@ require("../model/Client")
 const Produto = mongoose.model("product")
 const Cliente = mongoose.model("client")
 require("../model/NewNote")
+require("../model/Provider")
+const Provider = mongoose.model("provider")
 const NovaNota = mongoose.model("note")
 const cors = require("cors")
 const bodyParser = require("body-parser")
@@ -30,10 +32,6 @@ router.get('/' , (req,res) => {
 })
 
 
-
-router.get('/listagemDeClientes' , (req,res) =>{
-    res.render('admin/listagemClientes')
-})
 
 
 router.get('/cadastroClientes' , (req,res) =>{
@@ -97,11 +95,83 @@ router.get("/novaVenda" , (req,res) =>{
 })
 
 
+router.get("/cadastroFornecedor" , (req,res) =>{
+    res.render("admin/cadastroFornecedor")
+})
+
+router.get("/listarFornecedor" , (req,res) =>{
+
+
+Provider.find().then((provider)=>{
+    res.render("admin/listarFornecedor" , {provider : provider})
+}).catch((err)=>{
+    req.flash("error_msg" , "Erro ao cadastrar Fornecedor" + err)
+    res.redirect("/admin/")
+})
+
+
+
+
+
+
+})
+
+
+router.get("/listarClientes" , (req,res)=>{
+
+
+Cliente.find().populate().sort({data : 'desc'}).then((client1)=>{
+
+console.log(client1)
+
+res.render("admin/listarClientes", {client : client1})
+
+
+
+}).catch((err)=>{
+
+    req.flash("error_msg" , "Erro ao Listar produtos ! " + err)
+
+})
+
+
+
+
+})
 
 
 
 // END GET ROUTES  --------------------------------------------------------------
 // POST ROUTES ------------------------------------------------------------------
+
+
+router.post("/cadastroFornecedor/newProvider" , urlencodedParser ,  (req,res)=>{
+
+    const NewProvider = req.body.provider
+
+
+    Provider.findOne({cnpj : NewProvider.cnpj}).then((provider)=>{
+        if(provider)
+        {
+            res.send("cnpjCadastrado")
+        }
+        else
+        {
+            new Provider(NewProvider).save().then(()=>{
+            res.send("liberadoParaCadastro")
+            }).catch((err) =>{
+                req.flash("error_msg" , "Erro ao Cadastrar Fornecedor" + err)
+            })
+
+        }
+
+    }).catch((err)=>{
+
+        console.log(err)
+
+    })
+})
+
 
 
 
@@ -113,10 +183,8 @@ router.post("/cadastroClientes/newClient" , (req,res)=>{
     let nameComparation  = NewClient.name + " " + NewClient.otherName
 
 
-console.log(nameComparation)
     
     Cliente.findOne({name : NewClient.name}).then((client)=>{
-
         if(client){
 
             let nameResult = client.name + " " + client.otherName
@@ -131,7 +199,23 @@ console.log(nameComparation)
                   
                 })
             }
-        }
+
+        }        
+            else{
+                new Cliente(NewClient).save().then(()=>{
+                    res.send("clientecadastrado")
+                }).catch((err)=>{
+                  
+                })
+            }
+    }).catch((err)=>{
+
+        new Cliente(NewClient).save().then(()=>{
+            res.send("clientecadastrado")
+        }).catch(()=>{
+            res.send("clientenaocadastrado")
+        })
+
     })
 
 
