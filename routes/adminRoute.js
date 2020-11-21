@@ -1,527 +1,426 @@
 const express = require('express')
 const router = express.Router()
-const mongoose = require("mongoose")
-require("../model/Category")
-const Categoria = mongoose.model("category")
 const flash = require("connect-flash")
 const session = require("express-session")
-require("../model/Product")
-require("../model/Client")
-const Produto = mongoose.model("product")
-const Cliente = mongoose.model("client")
-require("../model/NewNote")
-require("../model/Provider")
-const Provider = mongoose.model("provider")
-const NovaNota = mongoose.model("note")
 const cors = require("cors")
 const bodyParser = require("body-parser")
-require("../model/SaidaDeProdutoRelatorio")
 const httpmsg = require("http-msgs")
-const SaidaDeUmNovoProduto = mongoose.model("saidadeprodutorelatorio")
+const category = require('../controller/CategoryController')
+const provider = require('../controller/ProviderController')
+const product = require('../controller/ProductController')
+const client = require('../controller/ClientController')
 let urlencodedParser = bodyParser.urlencoded({extended:false})
 
 
+
+//INSTANTIATE CONTROLLERS
+
+    const Category = new category
+    const Provider = new provider
+    const Client = new client
+    const Product = new product
+
+//END INSTANTIATE CONTROLLERS
 
 // GET ROUTES  --------------------------------------------------------------
 
  
 
 
-router.get('/' , (req,res) => {
-    res.render('admin/index')
-})
-
-
-
-
-router.get('/cadastroClientes' , (req,res) =>{
-    res.render('admin/cadastroClientes')
-})
-
-
-
-
-router.get("/cadastroProduto" , (req , res) => {
-    Categoria.find().then((categoria) =>{
-        res.render("admin/cadastroProduto" , {categoria : categoria})
-    }).catch((err) =>{
-        req.flash("error_msg" , "Houve um Erro ao listar as categorias exisentes")
-        res.redirect("/admin/")
-    })
-})
-
-
-
-router.get("/cadastroCategoria" , (req,res) => {
-    res.render("admin/cadastroCategoria")
-})
-
-
-router.get("/listarCategorias" , (req,res) =>{
-    Categoria.find().sort({date : "desc"}).then((categoria) => {
-        res.render("admin/listarCategorias" , {categoria: categoria})
-    }).catch((err) => {
-        req.flash("error_msg" , "Houve um Erro ao Listar as Categorias")
-        res.redirect(/admin/)
-    })
+    router.get('/' , (req,res) => {})
+    router.get("/cadastroProduto" , (req , res) => {})
+    router.get("/cadastroCategoria" , (req,res) => {})
+    router.get("/entradaemProdutos" , (req,res) => {})
+    router.get("/entradaEmNota" , (req,res)=>{})
+    router.get("/novaVenda" , (req,res) =>{})
+    router.get("/listarClientes" , (req,res)=>{})
     
-})
-
-
-
-
-
-router.get("/listarProdutos" , (req,res) =>{
-    Produto.find().populate("category").sort({date: "desc"}).then((produto,categoria)=>{
-        res.render("admin/listarProdutos" , {produto : produto})
-    }).catch((err) =>{
-        req.flash("error_msg" , "Erro ao Listar Produtos ! ")
-        res.redirect("admin/listarProdutos")
+    router.get('/cadastroClientes' , (req,res) =>{
+        Client.listClients()
+        .then(response => {
+            res.send(response)
+        })
+        .catch(err =>{
+            res.send(err)
+        })
     })
-})
+    router.get('/cadastroClientes/ForId=:id' , (req,res) =>{
+        Client.listClientsForId(req.params.id)
+        .then(response => {
+            res.send(response)
+        })
+        .catch(err =>{
+            res.send(err)
+        })
+    })
+    router.get("/listarFornecedores" , (req,res) =>{
+        Provider.listAllProvider()
+        .then(response =>{
+            res.send(response)
+        })
+        .catch(err =>{
+            res.send(err)
+        })
+    })
+    router.get("/listarFornecedores/PorId=:id" , (req,res) =>{
+
+        Provider.listProviderForId(req.params.id)
+        .then(response =>{
+            res.send(response)
+        })
+        .catch(err => {
+            res.send(err)
+        })
 
 
-router.get("/entradaemProdutos" , (req,res) => {
-    res.render("admin/entradaemProduto")
-})
+    })
+    router.get("/listarFornecedores/PorNome=:name" , (req,res) =>{
+
+        Provider.listProviderForName(req.params.name)
+        .then(reponse =>{
+            res.send(response)
+        })
+        .catch(err =>{
+            res.send(err)
+        })
+
+    })
 
 
-router.get("/entradaEmNota" , (req,res)=>{
-    res.render("admin/lancarProdutoEmNota")
-})
-
-router.get("/novaVenda" , (req,res) =>{
-    res.render("admin/novaVenda")
-})
-
-
-router.get("/cadastroFornecedor" , (req,res) =>{
-    res.render("admin/cadastroFornecedor")
-})
-
-router.get("/listarFornecedor" , (req,res) =>{
+    router.get("/listarCategorias" , (req,res) =>{
+        Category.listAllCategory().then((response) =>{
+            res.send(response)
+        })
+        .catch(err => {
+            res.send(err)
+        })
+    })
 
 
-Provider.find().then((provider)=>{
-    res.render("admin/listarFornecedor" , {provider : provider})
-}).catch((err)=>{
-    req.flash("error_msg" , "Erro ao cadastrar Fornecedor" + err)
-    res.redirect("/admin/")
-})
+    router.get("/listarCategorias/PorId=:id" , (req,res)=>{
+
+        const idPesquisado = req.params.id 
+
+        Category.listCategoryForID(idPesquisado)
+        .then(response => {res.send(response)})
+        .catch(err =>{res.send(err)})
 
 
+    })
+
+    router.get("/listarCategorias/PorNome=:name" , (req,res)=>{
+
+        const namePesquisado = req.params.name 
+        Category.listCategoryForName(namePesquisado)
+        .then(response => {res.send(response)})
+        .catch(err =>{res.send(err)})
 
 
+    })
 
+    router.get('/listarProdutos' , (req,res)=>{
+            Product.listAllProduct()
+            .then((response) => {res.send(response)})
+            .catch((err) => res.send(err))
+    })
+    router.get('/listarProdutos/PorId=:id' , (req,res)=>{
 
-})
+            const idProduct = req.params.id
 
+            Product.listProductForId(idProduct)
+            .then((response) => {res.send(response)})
+            .catch((err) => res.send(err))
+    })
 
-router.get("/listarClientes" , (req,res)=>{
+    router.get('/listarProdutos/PorNome=:nome' , (req,res)=>{
 
+            const nomeProduct = req.params.nome
 
-Cliente.find().populate().sort({data : 'desc'}).then((client1)=>{
-
-console.log(client1)
-
-res.render("admin/listarClientes", {client : client1})
-
-
-
-}).catch((err)=>{
-
-    req.flash("error_msg" , "Erro ao Listar produtos ! " + err)
-
-})
-
-
-
-
-})
-
-
+            Product.listProductForName(nomeProduct)
+            .then((response) => {res.send(response)})
+            .catch((err) => res.send(err))
+    })
 
 // END GET ROUTES  --------------------------------------------------------------
 // POST ROUTES ------------------------------------------------------------------
 
 
-router.post("/cadastroFornecedor/newProvider" , urlencodedParser ,  (req,res)=>{
+    router.post('/cadastroProduto/addProduct' , (req,res)=>{
+        const product = req.body.product
 
-    const NewProvider = req.body.provider
-
-
-    Provider.findOne({cnpj : NewProvider.cnpj}).then((provider)=>{
-        if(provider)
-        {
-            res.send("cnpjCadastrado")
-        }
-        else
-        {
-            new Provider(NewProvider).save().then(()=>{
-            res.send("liberadoParaCadastro")
-            }).catch((err) =>{
-                req.flash("error_msg" , "Erro ao Cadastrar Fornecedor" + err)
-            })
-
-        }
-
-    }).catch((err)=>{
-
-        console.log(err)
-
+        Product.addProduct(product).then(response => {
+            if(response){
+                const responseFinal = {
+                    success : true,
+                    msg : "Produto Cadastrado com Sucesso",
+                    idProduct : response
+                }
+                res.send(responseFinal)
+            }
+            else{
+                const responseFinal = {
+                    success : false,
+                    msg : "Houve um erro ao cadastrar o Produto",
+                    idProduct : response
+                }
+                res.send(responseFinal)
+            }
+        })
+        .catch(err => {res.send(err)})
     })
-})
 
+    router.post('/cadastroProduto/updateProduct' , (req,res)=>{
+        const product = req.body.product
+        Product.updateProduct(product)
+        .then(response =>{
 
+            if(response != 0){
+                const responseFinal = {
+                    success : true,
+                    msg : "Produto Editado com Sucesso",
+                    idProduct : response
+                }
+                res.send(responseFinal)
+               }
+               else{
+                const responseFinal = {
+                    success : false,
+                    msg : "Houve um Erro ao Editar o Produto",
+                    idProduct : response
+                }
+                res.send(responseFinal)
+               }
 
+        })
+        .catch(err => {res.send(err)})
+    })
 
+    router.post('/cadastroProduto/deleteProduct' , (req,res)=>{
 
-router.post("/cadastroClientes/newClient" , (req,res)=>{
-
-    let NewClient = req.body.client
-
-    let nameComparation  = NewClient.name + " " + NewClient.otherName
-
-
-    
-    Cliente.findOne({name : NewClient.name}).then((client)=>{
-        if(client){
-
-            let nameResult = client.name + " " + client.otherName
-            if(nameComparation == nameResult){
-                console.log("Cliente nao liberado para cadastro , nome ja existente em nosso sistema ")
-                res.send("clientenaocadastrado")
+        const idproduct = req.body.idproduct
+        Product.deleteProduct(idproduct)
+        .then(response =>{
+            const responseFinal = {
+                success : true,
+                msg :"Produto deletado com sucesso",
+                idProduct : response
             }
-            else{
-                new Cliente(NewClient).save().then(()=>{
-                    res.send("clientecadastrado")
-                }).catch((err)=>{
-                  
-                })
-            }
-
-        }        
-            else{
-                new Cliente(NewClient).save().then(()=>{
-                    res.send("clientecadastrado")
-                }).catch((err)=>{
-                  
-                })
-            }
-    }).catch((err)=>{
-
-        new Cliente(NewClient).save().then(()=>{
-            res.send("clientecadastrado")
-        }).catch(()=>{
-            res.send("clientenaocadastrado")
+            res.send(responseFinal)
+        })
+        .catch(err =>{
+            res.send(err)
         })
 
     })
 
+    router.post("/cadastroFornecedor/addProvider" ,  (req,res)=>{
 
+        const provider = req.body.provider
+        Provider.addProvider(provider)
+        .then(response =>{
+           if(response){
+            const responseFinal = {
+                success : true,
+                msg : "Fornecedor Cadastrado com Sucesso",
+                idProvider : response
+            }
+            res.send(responseFinal)
+           }
+        })
+        .catch(err => {
+            res.send(err)
+        })
+    })
+    router.post("/cadastroFornecedor/updateProvider" ,  (req,res)=>{
 
-    
-})
-
-
-router.post("/novaVenda/addProduct",urlencodedParser , (req,res)=>{
-        const envioCliente = req.body.referencia
-
-    Produto.findOne({reference : envioCliente}).then((productSale)=>{
-        if(productSale){
-            res.send(productSale)
-        }else{
-            res.send("false")
-        }
-
-
-
-
-    }).catch((err)=>{
-        console.log("Nao encontramos produto com esta referencia ! ")
+        const provider = req.body.provider
+        Provider.updateProvider(provider)
+        .then(response =>{
+           if(response === provider.idprovider){
+            const responseFinal = {
+                success : true,
+                msg : "Fornecedor Editado com Sucesso",
+                idProvider : response
+            }
+            res.send(responseFinal)
+           }
+           else{
+            const responseFinal = {
+                success : false,
+                msg : "Houve um Erro ao Editar Fornecedor",
+                idProvider : response
+            }
+            res.send(responseFinal)
+           }
+        })
+        .catch(err => {
+            res.send(err)
+        })
     })
 
-})
-
-
-router.post("/listarProdutos/saidadoproduto/exit" , (req,res)=>{
-
-Produto.findOne({reference : req.body.reference}).then((produto)=>{
-
-    const QuantidadeARetirar = req.body.quantidadeARetirar
-
-    produto.quantity = produto.quantity - QuantidadeARetirar
-
-
-    
-    const saidaDeProduto = {
-        referencia : req.body.reference,
-        motivo : req.body.motivoSaida,
-        desc : req.body.descSaida,
-        quantidadeRetirada : QuantidadeARetirar,
-        obs : req.body.obsSaida
-    }
-
-        produto.save().then(()=>{
-        }).catch((err) => {
-            req.flash("error_msg" , "Houve um erro ao Registrar a Saida do Produto" + err)
-            res.redirect("/admin/listarProdutos")
+    router.post("/cadastroFornecedor/deleteProvider" ,  (req,res)=>{
+        const ifProvider = req.body.idProvider
+        Provider.deleteProvider(ifProvider)
+        .then(response =>{
+           if(response){
+            const responseFinal = {
+                success : true,
+                msg : "Fornecedor Deletado com Sucesso",
+                idProvider : response
+            }
+            res.send(responseFinal)
+           }
+           else
+           {
+            const responseFinal = {
+                success : false,
+                msg : "Fornecedor não Encontrado",
+            }
+            res.send(responseFinal)
+           }
         })
+        .catch(err => {
+            res.send(err)
+        })
+    })
 
-   new SaidaDeUmNovoProduto(saidaDeProduto).save().then(()=>{
-       res.redirect("/admin/listarProdutos")
-   }).catch((err) =>{
-       req.flash("error_msg" , "Houve um erro ao Registrar o Relatorio de Saida de Produto" + err)
-       res.redirect("/admin/listarProdutos")
-   })
+    router.post("/cadastroCliente/newClient" , (req,res)=>{
+        const client = req.body.client
+        Client.addClient(client)
+        .then(response => {
+            if(response){
+                let responseCorrect = {
+                    success : true,
+                    msg : "Cliente Cadastrado com Sucesso",
+                    idClient : response
+                }
+                res.send(responseCorrect)
+            }})
+        .catch(err => {res.send(err)})
+    })
 
-})
+    router.post("/cadastroCliente/deleteClient" , (req,res)=>{
 
-})
+        const idClient = req.body.idclient
+        Client.deleteClient(idClient).then((response) =>{
 
-
-router.post("/listarProdutos/saidadoproduto" , (req,res)=>{
-
-    Produto.findOne({reference : req.body.reference}).populate("category").then((produto)=>{
-        res.render("admin/saidadeProduto" , {produto : produto})
-    }).catch((err)=>{})
-
-})
-
-
-router.post("/lancarProdutoEmNota/enterone", (req,res)=>{
-    res.send(req.body.nomeProduto)
-})
-
-router.post("/lancarProdutoEmNota/success" , (req,res)=>{
-
-const Novanota = {
-    numeroNota : req.body.NumeroDaNota,
-    quantidadeDeItens : req.body.QuantidadeDeItens,
-    nomeFornecedor : req.body.NomeFornecedor
-}
-
-
-Categoria.find().populate("category").sort({date: "desc"}).then((categoria)=>{
-    res.render("admin/entradaViaNota" , {categoria : categoria , NovaNota : Novanota})
-
-
-})
-
-
-})
-
-router.post("/success/ajaxRequest/entradaEmNota", urlencodedParser , (req,res)=>{
-    res.send(req.body.name)
-})
-
-
-router.post("/lancarProdutoEmNota/success/onebyone", urlencodedParser , (req,res)=>{
-
-    const data = req.body;
-
-
-  
-
-    console.log(data.ref)
-
-    Produto.findOne({reference : data.ref}).then((produ)=>{
-
-        if(produ){
-
-            //bloco de comparacao do nome do produto !
-            if(data.name != produ.name)
+            if(response)
             {
-                //Houve Divergencia , esta referencia esta cadastrada em outro produto !
-                res.json({msg : false})
+                let responseCorrect1 = {
+                    success : true,
+                    msg : "Cliente Deletado com Sucesso",
+                }
+                res.send(responseCorrect1)
+            }
+            else{
+                let responseCorrect1 = {
+                    success : false,
+                    msg : "Cliente não deletado ID Invalido",
+                }
+                res.send(responseCorrect1)
+            }
+        })
+        .catch(err => res.send(err))
+    })
+
+
+    router.post('/cadastroCliente/updateClient' , (req,res)=>{
+        const client = req.body.client
+
+        Client.updateClient(client).then(response => {
+            if(response === client.idclient){
+                let responseCorrect1 = {
+                    success : true,
+                    msg : "Cliente Editado com Sucesso",
+                }
+                res.send(responseCorrect1)
+            }
+            else{
+                let responseCorrect1 = {
+                    success : false,
+                    msg : "Cliente Não Encontrado",
+                }
+                res.send(responseCorrect1)
+            }
+        })
+        .catch(err => res.send(err))
+    })
+
+
+    router.post("/Categorias/AddCategory" , (req,res) =>{
+        Category.addCategory(req.body.category)
+        .then(response => {
+            if(response){
+                const responseFinal = {
+                    success : true,
+                    msg : "Categoria Cadastrada com Sucesso",
+                    idCategory : response
+                }
+                res.send(responseFinal)
+            }
+        })
+        .catch(err => res.send(err))
+    })
+
+
+    router.post("/Categorias/UpdateCategory" , (req,res) =>{
+        const categoryObj = req.body.categoryObj
+        Category.updateCategory(categoryObj)
+        .then((response) => {
+ 
+            if(response === categoryObj.idcategory){
+                let responseCorrect = {
+                    success : true,
+                    msg : "Categoria Editada com Sucesso",
+                    idCategory : response
+                }
+                res.send(responseCorrect)
+            }
+            else{
+                let responseCorrect = {
+                    success : false,
+                    msg : "Erro ao Editar Categoria",
+                    idCategory : response
+                }
+                res.send(responseCorrect)
             }
 
-            else {  
-                // Produto Encontrado , Vamos dar Entrada nele  
-                res.json({msg : "sucessoEntradaProduto"})
-
-                var QuantidadeEntradaNota = produ.quantity + parseInt(data.qtd)
-
-
-                produ.quantity = QuantidadeEntradaNota
-                produ.save()
-            }
-
-        }
-        else
-        {
-            //Produto nao encontrado , Vamos cadastrar um novo ...
-            res.json({msg : "intermade"})
             
-            const NewProduct = {
-                name : data.name,
-                desc : data.desc,
-                reference : data.ref,
-                color : data.color,
-                quantity : data.qtd , 
-                category : data.category,
-                buyValue : parseFloat(data.buyValue) ,
-                sellValue : parseFloat(data.saleValue)
-            }
-            Produto(NewProduct).save();
-        }
-    })
-
-
-    let NewProduct = {
-        name : data.name
-    }
-
-
-  
-})
-
-
-router.post("/listarProdutos/deletar" , (req,res) => {
-        Produto.deleteOne({reference : req.body.reference}).then(()=> {
-            res.redirect("/admin/listarProdutos")
-        }).catch((err) => {
-            req.flash("error_msg" , "Houve um Erro ao Deletar o Produto ! ")
-            res.redirect("/admin/listarProdutos")
         })
-})
+        .catch((err) => {res.send(err)})
+    })
 
 
-router.post("/listarProdutos/pesquisaDaTabela" , (req,res) =>{
-
-    const nomeProduto = req.body.nomeProduto
-    const referenciaProduto = req.body.refProduto
-
-    console.log(nomeProduto)
-    console.log(referenciaProduto)
-
-})
-
-
-router.post("/entradaemProdutos/entrada" , (req,res) =>{
-
-    Produto.findOne({_id : req.body.idProduto}).then((produto) =>{
-
-
-        var QuantidadeAdd = produto.quantity + parseInt(req.body.valorAdd)
-
-        produto.quantity = QuantidadeAdd
-
-        //produto.quantity = produto.quantity + req.body.valorAdd
-        
-
-
-        
-        produto.save().then(()=>{
-            res.redirect("/admin/listarProdutos")
-            
-        }).catch((err) =>{
-            req.flash("error_msg" , "Erro ao Adicionar quantidade ao sistema ! ")
-            res.redirect("/admin/")
+    router.post("/Categorias/DeleteCategory" , (req,res) =>{
+        Category.deleteCategory(req.body.id.id)
+        .then(response=>{
+                const response1 = {
+                    success : true,
+                    msg : "Categoria Deletada com Sucesso"
+                }
+                res.send(response1)
         })
-    
-        
-
-    }).catch((err) =>{
-        req.flash("error_msg" , "Produto nao encontrado ! " + err)
-        res.redirect("/admin/")
-    })
-
-
-
-})
-
-
-router.post("/novaVenda/endSale", urlencodedParser , (req,res)=>{
-    let Sale = req.body.products
-    let TotalSale = []
-
-    
-    for(let i = 0 ; i < Sale.length ; i++){
-        Produto.findOne({reference : Sale[i]}).then((produ)=>{
-            
-            console.log(produ)
-
-        }).catch((err)=>{
-            console.log("Produto Nao Encontrado " + err)
+        .catch(err =>{
+            res.send(err)
         })
-    }
-
-
-
-
-})
-
-
-router.post("/entradaemProdutos/new" , (req,res)=>{
-
-    Produto.findOne({reference : req.body.referenciaProduto}).populate("category").then((produto)=>{
-        res.render("admin/pesquisaDaEntradaemProduto" , {produto: produto} )
-    }).catch((err)=>{
-        req.flash("error_msg" , "Houve um erro ao adicionar o produto existente")
-        res.redirect("/admin/")
     })
-
-
-})
-
+    router.post("/Categorias/" , (req,res) =>{})
 
 
 
-router.post("/cadastroCategoria/new" , (req,res)=>{
-
-    const NewCategory = {
-        name : req.body.categoryName,
-        desc : req.body.categoryDesc,
-    }
-
-    new Categoria(NewCategory).save().then(() => {
-            req.flash("success_msg" , "Categoria Cadastrada")
-            res.redirect("/admin/")
-            }).catch((err)=>{
-            req.flash("error_msg" , "Erro ao Cadastrar Categoria       Descricao do Erro : " + err)
-    })
-
-})
-
-router.post("/cadastroProduto/new" , (req,res,next) =>{
-
-    var buyValue = parseFloat(req.body.buyValue)
-    var sellValue = parseFloat(req.body.sellValue)
-
-    const NewProduct = {
-        name : req.body.productName,
-        desc : req.body.productDesc,
-        reference : req.body.productRef,
-        color : req.body.productColor,
-        quantity : req.body.quantityProduct,
-        category : req.body.productCategory,
-        buyValue : buyValue,
-        sellValue : sellValue
-    }
 
 
+    router.post("/novaVenda/addProduct",urlencodedParser , (req,res)=>{})
+    router.post("/lancarProdutoEmNota/enterone", (req,res)=>{})
+    router.post("/lancarProdutoEmNota/success" , (req,res)=>{})
+    router.post("/success/ajaxRequest/entradaEmNota", urlencodedParser , (req,res)=>{})
+    router.post("/lancarProdutoEmNota/success/onebyone", urlencodedParser , (req,res)=>{})
+    router.post("/entradaemProdutos/entrada" , (req,res) =>{})
+    router.post("/novaVenda/endSale", urlencodedParser , (req,res)=>{})
+    router.post("/entradaemProdutos/new" , (req,res)=>{})
+    router.post("/cadastroCategoria/new" , (req,res)=>{})
+    router.post("/cadastroProduto/new" , (req,res,next) =>{})
     
-    new Produto(NewProduct).save().then(()=>{
-        next
-        res.redirect("/admin/listarProdutos")
-    }).catch((err)=>{
-        req.flash("error_msg" , "Houve uma falha ao cadastrar produto , Codigo do Erro : " + err )
-        res.redirect("/admin/")
-    })
-    
-
-})
-
-
-router.post("/listarCategoria/deletar" , (req,res) =>{
-    Categoria.deleteOne({_id : req.body.id}).then(()=>{
-        res.redirect("/admin/listarCategorias")
-    }).catch((err)=>{
-        req.flash("error_msg" , "Houve um erro ao deletar a Categoria ! ")
-        res.redirect("/admin/listarCategoria")
-    })
-})
 
 
 
